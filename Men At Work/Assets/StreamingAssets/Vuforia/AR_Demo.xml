@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QCARConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="qcar_config.xsd">
+  <Tracking>
+    <ImageTarget name="WIN_20200124_18_48_11_Pro" size="0.338667 0.190500" />
+    <ImageTarget name="thor-hammer-mjlnir" size="0.250000 0.140489" />
+    <ImageTarget name="AR_Fire" size="0.280000 0.157454" />
+  </Tracking>
+</QCARConfig>
