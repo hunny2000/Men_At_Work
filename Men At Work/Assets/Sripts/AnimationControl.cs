@@ -5,86 +5,136 @@ using UnityEngine;
 public class AnimationControl : MonoBehaviour
 {
     public Animator Anim;
-    //public Rigidbody rb;
+    public Rigidbody rb;
     public float speed;
     [SerializeField] private Transform cam;
+    public float Maxvelocity;
+    float Maxtime = 0f;
+    bool climb = false;
+    //m_CamForward = Vector3.Scale(m_Cam.forward, new Vector3(1, 0, 1)).normalized;
+    //m_Move = v* m_CamForward + h* m_Cam.right;
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Slope")
+        {
+            Debug.Log("yup");
+            climb = true;
+        }
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Slope")
+        {
+            climb = false;
+        }
+    }
+    private void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+        rb.angularVelocity = Vector3.zero;
+    }
+
+    void Update()
+    {
+        //rb.velocity = new Vector3(Mathf.Clamp(rb.velocity.x, -rb.mass / Time.fixedDeltaTime, rb.mass / Time.fixedDeltaTime),  Mathf.Clamp(rb.velocity.y, -rb.mass / Time.fixedDeltaTime, 0f), Mathf.Clamp(rb.velocity.z, -rb.mass / Time.fixedDeltaTime, rb.mass / Time.fixedDeltaTime));
+        
+        Maxtime += Time.deltaTime;
+        
+        if ( Maxtime > 5f)
+        {
+            Anim.SetFloat("Duration", Maxtime);
+        }
+        if (Maxtime > 10f)
+        {
+            Anim.SetFloat("Duration", 0f);
+            Maxtime = 0f;
+        }
+        UpdateAnimation();
+    }
+    void FixedUpdate()
+    {
+        Move();  
+    }
+
     
 
-    void FixedUpdate()
+    void Move()
     {
         float vertical = Input.GetAxis("Vertical");
         float horixontal = Input.GetAxis("Horizontal");
 
         Vector2 input = new Vector2(horixontal, vertical);
 
-        /*Vector3 moveHorizontal = transform.right * horixontal;
-        Vector3 moveVertical = transform.forward * vertical;
-
-        Vector3 movement = (moveVertical + moveHorizontal).normalized * speed;
-
-        rb.MovePosition(rb.position + movement * Time.deltaTime);*/
-        //Debug.Log(cam.transform.rotation.y);
-        //rb.transform.rotation = Quaternion.Euler(0f, cam.transform.rotation.y, 0f);
-        
         Quaternion Rot_Temp = cam.transform.rotation;
         Rot_Temp.x = 0f;
         Rot_Temp.z = 0f;
-        this.transform.rotation = Rot_Temp;
 
+        /*Vector3 Pos_Temp = cam.forward.normalized * input.y + cam.right.normalized * input.x;
+        Pos_Temp.y = 0f;
 
-        if (Input.GetKey(KeyCode.W))
+        this.transform.position += (Pos_Temp) * Time.deltaTime * speed;
+        Debug.Log(Pos_Temp);
+
+        this.transform.rotation = Rot_Temp;*/
+       
+        if (Input.GetKey(KeyCode.W) )
         {
-            //forward
-            //rb.transform.position += Vector3.forward * speed;
-            ///rb.AddForce(Vector3.forward, ForceMode.Force);
-            ///rb.MoveRotation(Quaternion.Euler(new Vector3(0f, 0f, 0f)));
-            /*if (transform.position.y == 90f|| transform.position.y == -90f)
-            {
-                rb.transform.rotation = cam.rotation;
-            }*/
+
+            Vector3 Pos_Temp = cam.forward.normalized * input.y + cam.right.normalized * input.x;
+            Pos_Temp.y = 0f; ;
+
+            //rb.AddForce((Pos_Temp) * Time.deltaTime * speed, ForceMode.VelocityChange);
+            this.transform.position += (Pos_Temp) * Time.deltaTime * speed;
+            //Debug.Log(Pos_Temp);
+
+            this.transform.rotation = Rot_Temp;
+        }
+         if (Input.GetKey(KeyCode.S) && transform.rotation.y != 0f)
+        {
             Vector3 Pos_Temp = cam.forward.normalized * input.y + cam.right.normalized * input.x;
             Pos_Temp.y = 0f;
 
+            //rb.AddForce((Pos_Temp) * Time.deltaTime * speed, ForceMode.VelocityChange);
             this.transform.position += (Pos_Temp) * Time.deltaTime * speed;
+            //Debug.Log(Pos_Temp);
+
+            this.transform.rotation = Rot_Temp * Quaternion.Euler(0f, 180f, 0f);
+
         }
-        /*if (Input.GetKey(KeyCode.S) && transform.rotation.y != 0f)
+         if (Input.GetKey(KeyCode.D))
         {
-            //backwared
-            //rb.transform.position += Vector3.back * speed;
-            ///rb.AddForce(Vector3.back, ForceMode.Force);
-            ///rb.MoveRotation(Quaternion.Euler(new Vector3(0f, 360f, 0f)));
+            Vector3 Pos_Temp = cam.forward.normalized * input.y + cam.right.normalized * input.x;
+            Pos_Temp.y = 0f;
 
-            this.transform.position += (cam.forward.normalized * input.y + cam.right.normalized * input.x) * Time.deltaTime * speed;
-        }*/
-        if (Input.GetKey(KeyCode.D) )
-        {
-            //right
-            this.transform.position += Vector3.right.normalized * speed * Time.deltaTime;
-            //rb.transform.position += Vector3.right * speed;
-            this.transform.rotation = Quaternion.Euler(0f, cam.rotation.y + (90f), 0f);
-            //cam.rotation = Quaternion.Euler(0f, cam.rotation.y + (90f), 0f);
+            //rb.AddForce((Pos_Temp) * Time.deltaTime * speed, ForceMode.VelocityChange);
+            this.transform.position += (Pos_Temp) * Time.deltaTime * speed;
+            //Debug.Log(Pos_Temp);
 
-            //this.transform.position += (cam.forward.normalized * input.y + cam.right.normalized * input.x) * Time.deltaTime * speed;
-            //this.transform.LookAt(this.transform.position + Vector3.one);
+            this.transform.rotation = Rot_Temp * Quaternion.Euler(0f, 90f, 0f);
+
 
         }
         if (Input.GetKey(KeyCode.A))
         {
-            //left
-            this.transform.position += Vector3.left.normalized * speed *Time.deltaTime;
-            this.transform.rotation = Quaternion.Euler(0f, cam.rotation.y + (-90f), 0f);
-            //cam.rotation = Quaternion.Euler(0f, cam.rotation.y + (-90f), 0f);
-            //this.transform.position += (cam.forward.normalized * input.y + cam.right.normalized * input.x) * Time.deltaTime * speed;
-            //this.transform.LookAt(this.transform.position + Vector3.one);
-        }
+            Vector3 Pos_Temp = cam.forward.normalized * input.y + cam.right.normalized * input.x;
+            Pos_Temp.y = 0f;
 
+            //rb.AddForce((Pos_Temp) * Time.deltaTime * speed, ForceMode.VelocityChange);
+            this.transform.position += (Pos_Temp) * Time.deltaTime * speed;
+            //Debug.Log(Pos_Temp);
+
+            this.transform.rotation = Rot_Temp * Quaternion.Euler(0f, -90f, 0f);
+
+        }
+               
         
     }
-    private void LateUpdate()
+
+    void UpdateAnimation()
     {
-        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.D)|| Input.GetKey(KeyCode.A)) 
+        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.S) && climb == false) 
         {
-            
+
             Anim.SetInteger("Run", 1);
         }
         else
@@ -92,6 +142,15 @@ public class AnimationControl : MonoBehaviour
             Anim.SetInteger("Run", 0);
         }
 
+        if (climb == true)
+        {
+            Anim.SetBool("Climb", climb);
+        }
+        else
+        {
+            Anim.SetBool("Climb",climb);
+        }
+        
         if (Input.GetKey(KeyCode.Space))
         {
             Anim.SetBool("Jump", true);
@@ -120,6 +179,4 @@ public class AnimationControl : MonoBehaviour
             Anim.SetBool("Punch", false);
         }
     }
-
-    
 }

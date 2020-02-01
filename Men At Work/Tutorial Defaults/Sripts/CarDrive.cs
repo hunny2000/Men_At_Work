@@ -30,7 +30,7 @@ public class CarDrive : MonoBehaviour
 
         Debug.DrawRay(this.transform.position, direction, Color.red);
 
-        Debug.Log(Vector3.Distance(this.transform.position, Lookat));
+        //Debug.Log(Vector3.Distance(this.transform.position, Lookat));
 
         if (Vector3.Distance(this.transform.position,Lookat) > 15f)
         {
